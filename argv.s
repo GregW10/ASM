@@ -6,6 +6,7 @@
 .extern _printf
 .extern _fprintf
 .extern _putchar
+.extern _sleep
 
 _main:
     pushq %rbp
@@ -44,6 +45,8 @@ _print_argv:
     pushq %rbp
     movq %rsp, %rbp
 
+    subq $8, %rsp
+
     xorb %al, %al
 
     xorq $0, %rdi
@@ -54,15 +57,25 @@ _print_argv:
 
     xorq %rcx, %rcx
 
-    movl $10, %ecx
+    movq $0xa, %rcx
+    callq _here
+    movq $10, 8(%rsp)
 while:
     # movq (%rsi), %rdi
     #callq _printf
     #addq $8, %rsi
     #movq $10, %rdi
-    callq _here
+    #callq _here
     #callq _putchar
-    loop while
+    leaq num_str(%rip), %rdi
+    movq 8(%rsp), %rsi
+    callq _printf
+    movq $1, %rdi
+    callq _sleep
+    decq 8(%rsp)
+    jnz while
+
+    addq $8, %rsp
 
     jmp bye
 error:
@@ -103,3 +116,6 @@ argv_msg:
 
 here_str:
     .asciz "Here?????\n"
+
+num_str:
+    .asciz "Number: %ld\n"
