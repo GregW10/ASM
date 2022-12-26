@@ -9,17 +9,25 @@ _main:
 
     subq $32, %rsp
 
-    movq $0x20000004, %rax
+    movq $0x02000004, %rax
     movq $1, %rdi
     leaq syscall_str(%rip), %rsi
     movq $25, %rdx
     syscall
+
+    jc error
 
     xorq %rax, %rax
 
     leave
     ret
 
-.data
+error:
+    movq $1, %rax
+    leave
+    ret
+
+#.data
+.section __DATA,__data
 syscall_str:
     .asciz "Printed with a syscall.\n"
